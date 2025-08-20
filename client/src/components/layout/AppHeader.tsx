@@ -4,8 +4,6 @@ import { UserOutlined } from "@ant-design/icons";
 import { useLocation } from "wouter";
 import { jwtDecode } from "jwt-decode";
 
-// Sử dụng đường dẫn đơn giản đến logo mới (đã đổi tên)
-const logo = "/logo/logo.png";
 const { Header } = Layout;
 
 interface JwtPayload {
@@ -54,6 +52,9 @@ const AppHeader: React.FC = () => {
     setLocation(isAdmin ? "/dashboard" : "/home");
   };
 
+  // Sử dụng đường dẫn public đúng cách
+  const logoPath = "/logo/logo.png";
+
   return (
     <Header
       style={{
@@ -70,13 +71,13 @@ const AppHeader: React.FC = () => {
         onClick={handleLogoClick}
       >
         <img 
-          src={logo} 
+          src={logoPath} 
           alt="Logo" 
           style={{ height: 40, marginRight: 16 }} 
           onError={(e) => {
-            // Fallback nếu logo không tìm thấy
-            console.error("Logo failed to load, check path:", logo);
-            e.currentTarget.style.display = 'none';
+            console.error("Logo failed to load, check path:", logoPath);
+            // Fallback đến một logo mặc định nếu cần
+            e.currentTarget.src = "/logo.png";
           }}
         />
         <Typography.Title level={4} style={{ color: "#fff", margin: 0 }}>
