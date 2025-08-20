@@ -4,11 +4,6 @@ import { UserOutlined } from "@ant-design/icons";
 import { useLocation } from "wouter";
 import { jwtDecode } from "jwt-decode";
 
-// Sửa đường dẫn import dựa trên vị trí tương đối
-// AppHeader.tsx nằm trong src/components/layout/
-// Logo nằm trong src/assets/logo.png
-import logoImage from "../../assets/logo.png";
-
 const { Header } = Layout;
 
 interface JwtPayload {
@@ -57,6 +52,9 @@ const AppHeader: React.FC = () => {
     setLocation(isAdmin ? "/dashboard" : "/home");
   };
 
+  // Sử dụng URL trực tiếp từ GitHub
+  const logoUrl = "https://raw.githubusercontent.com/caovanducanh/demo-login-FE/master/logo.png";
+
   return (
     <Header
       style={{
@@ -73,11 +71,11 @@ const AppHeader: React.FC = () => {
         onClick={handleLogoClick}
       >
         <img 
-          src={logoImage} 
+          src={logoUrl} 
           alt="Logo" 
           style={{ height: 40, marginRight: 16 }} 
           onError={(e) => {
-            console.error("Logo failed to load");
+            console.error("Logo failed to load from GitHub");
             // Fallback đến text nếu logo không load được
             e.currentTarget.style.display = 'none';
           }}
