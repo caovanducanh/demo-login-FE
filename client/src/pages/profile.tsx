@@ -1,8 +1,9 @@
 import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { fetchCurrentUser, logoutAllSessions } from "../lib/api";
+import { fetchCurrentUser } from "../lib/apis/userApi";
+import { logoutAllSessions } from "../lib/apis/sessionApi";
 import { Card, Typography, Descriptions, Spin, message, Tabs, Table, Button, Modal } from "antd";
-import { fetchLoginHistory } from "../lib/loginHistoryApi";
+import { fetchLoginHistory } from "../lib/apis/loginHistoryApi";
 import { useLocation } from "wouter";
 
 

@@ -2,15 +2,15 @@
 import React, { useState } from "react";
 import { Table, Typography, message, Input, Button, Form, Modal } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { permissionsApi } from "../lib/api";
+import * as permissionApi from "../lib/apis/permissionApi";
 
 
 export default function Permissions() {
   const queryClient = useQueryClient();
-  const { data, isLoading, isError, error } = useQuery(["permissions"], permissionsApi.getAll);
+  const { data, isLoading, isError, error } = useQuery(["permissions"], permissionApi.fetchPermissions);
   const [editing, setEditing] = useState<any>(null);
   const [form] = Form.useForm();
-  const updateMutation = useMutation(({ id, values }: any) => permissionsApi.update(id, values), {
+  const updateMutation = useMutation(({ id, values }: any) => permissionApi.updatePermission(id, values), {
     onSuccess: () => {
       message.success("Permission updated");
       setEditing(null);
@@ -52,7 +52,7 @@ export default function Permissions() {
       <Typography.Title level={2} style={{ marginBottom: 16 }}>Permission Management</Typography.Title>
       <Table
         columns={columns}
-        dataSource={data?.data || []}
+        dataSource={data || []}
         rowKey="id"
         loading={isLoading}
         pagination={false}

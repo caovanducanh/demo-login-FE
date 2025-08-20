@@ -3,7 +3,7 @@
 import React from "react";
 import { Table, Button, Space, Tag, message } from "antd";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUsers } from "../lib/api";
+import { fetchUsers } from "../lib/apis/userApi";
 
 const columns = [
   {

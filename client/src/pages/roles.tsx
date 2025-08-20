@@ -2,18 +2,19 @@
 import React, { useState } from "react";
 import { Table, Typography, message, Button, Modal, Form, Input, Select, Popconfirm } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { rolesApi, permissionsApi } from "../lib/api";
+import * as roleApi from "../lib/apis/roleApi";
+import * as permissionApi from "../lib/apis/permissionApi";
 
 
 export default function Roles() {
   const queryClient = useQueryClient();
-  const { data: roles, isLoading, isError, error } = useQuery(["roles"], rolesApi.getAll);
-  const { data: permissions } = useQuery(["permissions"], permissionsApi.getAll);
+  const { data: roles, isLoading, isError, error } = useQuery(["roles"], roleApi.fetchRoles);
+  const { data: permissions } = useQuery(["permissions"], permissionApi.fetchPermissions);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<any>(null);
   const [form] = Form.useForm();
 
-  const createMutation = useMutation(rolesApi.create, {
+  const createMutation = useMutation(roleApi.createRole, {
     onSuccess: () => {
       message.success("Role created");
       setModalOpen(false);
@@ -33,7 +34,7 @@ export default function Roles() {
       });
     }
   });
-  const updateMutation = useMutation(({ id, data }: any) => rolesApi.update(id, data), {
+  const updateMutation = useMutation(({ id, data }: any) => roleApi.updateRole(id, data), {
     onSuccess: () => {
       message.success("Role updated");
       setModalOpen(false);
@@ -42,7 +43,7 @@ export default function Roles() {
     },
     onError: (err: any) => message.error(err.message)
   });
-  const deleteMutation = useMutation((id: number) => rolesApi.delete(id), {
+  const deleteMutation = useMutation((id: number) => roleApi.deleteRole(id, "Admin deletion"), {
     onSuccess: () => {
       message.success("Role deleted");
       queryClient.invalidateQueries(["roles"]);
@@ -50,13 +51,18 @@ export default function Roles() {
     onError: (err: any) => message.error(err.message)
   });
 
-  const handleEdit = (role: any) => {
+  const handleEdit = async (role: any) => {
     setEditingRole(role);
-    form.setFieldsValue({
-      name: role.name,
-      permissions: role.permissions || [],
-    });
-    setModalOpen(true);
+    try {
+      const detail = await roleApi.getRoleDetail(role.id);
+      form.setFieldsValue({
+        name: detail.name,
+        permissions: detail.permissions ? detail.permissions.map((p: any) => p.code) : [],
+      });
+      setModalOpen(true);
+    } catch (err: any) {
+      message.error(err.message || 'Lỗi lấy thông tin role');
+    }
   };
   const handleAdd = () => {
     setEditingRole(null);
@@ -82,8 +88,8 @@ export default function Roles() {
   const handleDetail = async (role: any) => {
     setLoadingDetail(true);
     try {
-      const res = await rolesApi.getDetail(role.id);
-      setRoleDetail(res.data);
+      const detail = await roleApi.getRoleDetail(role.id);
+      setRoleDetail(detail);
       setDetailModalOpen(true);
     } catch (err: any) {
       message.error(err.message || 'Lỗi lấy chi tiết role');
@@ -120,7 +126,7 @@ export default function Roles() {
       <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>Add Role</Button>
       <Table
         columns={columns}
-        dataSource={roles?.data || []}
+        dataSource={roles || []}
         rowKey="id"
         loading={isLoading}
         pagination={false}
@@ -136,7 +142,7 @@ export default function Roles() {
           <Form.Item name="name" label="Role Name" rules={[{ required: true, message: "Role name is required" }]}> <Input /> </Form.Item>
           <Form.Item name="permissions" label="Permissions">
             <Select mode="multiple" allowClear placeholder="Select permissions">
-              {(permissions?.data || []).map((p: any) => (
+              {(permissions || []).map((p: any) => (
                 <Select.Option key={p.code} value={p.code}>{p.name}</Select.Option>
               ))}
             </Select>

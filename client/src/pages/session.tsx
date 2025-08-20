@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Button, Typography, message } from "antd";
-import { getActiveSessionCount, logoutCurrentSession, logoutAllSessions } from "../lib/api";
+import { getActiveSessionCount, logoutCurrentSession, logoutAllSessions } from "../lib/apis/sessionApi";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
 export default function Session() {

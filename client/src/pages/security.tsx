@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, Button, message, Typography, Modal, Select } from "antd";
-import { fetchUsers, lockAccount, unlockAccount, changeUserStatus } from "../lib/api";
+import { fetchUsers } from "../lib/apis/userApi";
+import { lockAccount, unlockAccount, changeUserStatus } from "../lib/apis/securityApi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const statusOptions = [

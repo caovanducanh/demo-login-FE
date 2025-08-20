@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { authApi } from "../lib/api";
+import * as authApi from "../lib/apis/authApi";
 import { tokenStorage } from "../lib/auth";
 import { useToast } from "./use-toast";
 import { useState, useEffect } from "react";
@@ -71,9 +71,6 @@ function useAuth() {
           setLocation("/");
         }
       }
-    },
-    onError: (error: any) => {
-      toast({ title: "Đăng nhập thất bại", description: error.message, variant: "destructive" });
     },
   });
 

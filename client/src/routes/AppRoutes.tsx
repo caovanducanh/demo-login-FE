@@ -1,19 +1,23 @@
 import React from "react";
 import { Route, Switch } from "wouter";
+
 import Users from "../pages/users";
 import Roles from "../pages/roles";
 import Permissions from "../pages/permissions";
 import Security from "../pages/security";
 import Session from "../pages/session";
 import Profile from "../pages/profile";
+import HomePage from "../pages/home";
+
 
 function Dashboard() {
   return <h1>Welcome to AuthGuard Dashboard</h1>;
 }
 
-export const AppRoutes = () => (
+const AppRoutes = () => (
   <Switch>
-    <Route path="/" component={Dashboard} />
+    <Route path="/" component={HomePage} />
+    <Route path="/home" component={HomePage} />
     <Route path="/dashboard" component={Dashboard} />
     <Route path="/users" component={Users} />
     <Route path="/roles" component={Roles} />
@@ -24,3 +28,5 @@ export const AppRoutes = () => (
     <Route> <h2>404 Not Found</h2> </Route>
   </Switch>
 );
+
+export default AppRoutes;

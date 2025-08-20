@@ -1,5 +1,5 @@
-import { apiRequest } from "./queryClient";
-import { BASE_BACKEND_URL } from "./api";
+import { apiRequest } from "../queryClient";
+import { BASE_BACKEND_URL } from "./base";
 
 export async function fetchLoginHistory(page = 0, size = 20) {
   const res = await apiRequest(
