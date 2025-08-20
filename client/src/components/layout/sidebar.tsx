@@ -16,24 +16,36 @@ const { Sider } = Layout;
 export function Sidebar() {
   const { user } = useAuth();
   const isAdmin = user?.roles?.includes("ADMIN");
+  const items = [
+    {
+      key: "/dashboard",
+      icon: <DashboardOutlined />,
+      label: <Link href="/dashboard">Dashboard</Link>,
+    },
+    {
+      key: "/users",
+      icon: <UserOutlined />,
+      label: <Link href="/users">Users</Link>,
+    },
+    ...(isAdmin ? [{
+      key: "/roles",
+      icon: <TeamOutlined />,
+      label: <Link href="/roles">Roles</Link>,
+    }] : []),
+    {
+      key: "/permissions",
+      icon: <SafetyOutlined />,
+      label: <Link href="/permissions">Permissions</Link>,
+    },
+  ];
   return (
     <Sider width={220} style={{ minHeight: "100vh", background: "#fff" }}>
-      <Menu mode="inline" defaultSelectedKeys={[window.location.pathname]} style={{ height: "100%", borderRight: 0 }}>
-        <Menu.Item key="/dashboard" icon={<DashboardOutlined />}>
-          <Link href="/dashboard">Dashboard</Link>
-        </Menu.Item>
-        <Menu.Item key="/users" icon={<UserOutlined />}>
-          <Link href="/users">Users</Link>
-        </Menu.Item>
-        {isAdmin && (
-          <Menu.Item key="/roles" icon={<TeamOutlined />}>
-            <Link href="/roles">Roles</Link>
-          </Menu.Item>
-        )}
-        <Menu.Item key="/permissions" icon={<SafetyOutlined />}>
-          <Link href="/permissions">Permissions</Link>
-        </Menu.Item>
-      </Menu>
+      <Menu
+        mode="inline"
+        defaultSelectedKeys={[window.location.pathname]}
+        style={{ height: "100%", borderRight: 0 }}
+        items={items}
+      />
     </Sider>
   );
 }

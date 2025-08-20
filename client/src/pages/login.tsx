@@ -11,8 +11,7 @@ const LoginPage: React.FC = () => {
 
   React.useEffect(() => {
     if (login.isSuccess && login.data?.data?.token) {
-      message.success("Đăng nhập thành công!");
-      setTimeout(() => setLocation("/dashboard"), 500);
+      setLocation("/dashboard");
     } else if (login.isError && login.error instanceof Error) {
       message.error(login.error.message);
     }

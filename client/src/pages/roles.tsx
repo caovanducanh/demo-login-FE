@@ -19,7 +19,19 @@ export default function Roles() {
       setModalOpen(false);
       queryClient.invalidateQueries(["roles"]);
     },
-    onError: (err: any) => message.error(err.message)
+    onError: (err: any) => {
+      // Chỉ lấy phần message phía sau mã lỗi nếu có dạng '400: ...'
+      // Chỉ lấy phần message phía sau mã lỗi nếu có dạng '400: ...', hoặc lấy toàn bộ nếu không có
+      let msg = err.message;
+      // Nếu có dạng '400: ...', chỉ lấy phần sau dấu ':'
+      const match = msg.match(/^\d{3}:\s*(.*)$/);
+      if (match) msg = match[1];
+      message.error({
+        content: msg,
+        style: { fontSize: 18, minWidth: 400 },
+        duration: 3,
+      });
+    }
   });
   const updateMutation = useMutation(({ id, data }: any) => rolesApi.update(id, data), {
     onSuccess: () => {
