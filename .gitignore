@@ -1,0 +1,48 @@
+# Node
+node_modules/
+
+# Build
+/dist
+/build
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Env
+.env
+.env.*
+
+# Vite
+*.local
+*.cache
+
+# Misc
+*.log
+*.tgz
+
+# VSCode
+.history/
+
+# Test
+coverage/
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
