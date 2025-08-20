@@ -2,9 +2,10 @@ import React, { useMemo } from "react";
 import { Layout, Avatar, Dropdown, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useLocation } from "wouter";
-import { jwtDecode } from "jwt-decode"; // dùng lib thay vì parse thủ công
+import { jwtDecode } from "jwt-decode";
 
-const logo = "/logo/ChatGPT Image Aug 20, 2025, 04_06_17 PM.png";
+// Sử dụng đường dẫn đơn giản đến logo mới (đã đổi tên)
+const logo = "/logo/logo.png";
 const { Header } = Layout;
 
 interface JwtPayload {
@@ -68,7 +69,16 @@ const AppHeader: React.FC = () => {
         style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
         onClick={handleLogoClick}
       >
-        <img src={logo} alt="Logo" style={{ height: 40, marginRight: 16 }} />
+        <img 
+          src={logo} 
+          alt="Logo" 
+          style={{ height: 40, marginRight: 16 }} 
+          onError={(e) => {
+            // Fallback nếu logo không tìm thấy
+            console.error("Logo failed to load, check path:", logo);
+            e.currentTarget.style.display = 'none';
+          }}
+        />
         <Typography.Title level={4} style={{ color: "#fff", margin: 0 }}>
           Demo Login
         </Typography.Title>
