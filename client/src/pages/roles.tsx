@@ -75,20 +75,36 @@ export default function Roles() {
       }
     });
   };
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [roleDetail, setRoleDetail] = useState<any>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  const handleDetail = async (role: any) => {
+    setLoadingDetail(true);
+    try {
+      const res = await rolesApi.getDetail(role.id);
+      setRoleDetail(res.data);
+      setDetailModalOpen(true);
+    } catch (err: any) {
+      message.error(err.message || 'Lỗi lấy chi tiết role');
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Name", dataIndex: "name", key: "name" },
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: any) => (
-        <>
-          <Button size="small" onClick={() => handleEdit(record)} style={{ marginRight: 8 }}>Edit</Button>
-          <Popconfirm title="Delete this role?" onConfirm={() => handleDelete(record.id)}>
-            <Button size="small" danger>Delete</Button>
-          </Popconfirm>
-        </>
-      )
+      render: (_: any, record: any) => [
+        <Button key="detail" size="small" onClick={() => handleDetail(record)} style={{ marginRight: 8 }}>Detail</Button>,
+        <Button key="edit" size="small" onClick={() => handleEdit(record)} style={{ marginRight: 8 }}>Edit</Button>,
+        <Popconfirm key="delete" title="Delete this role?" onConfirm={() => handleDelete(record.id)}>
+          <Button size="small" danger>Delete</Button>
+        </Popconfirm>
+      ]
     }
   ];
 
@@ -126,6 +142,33 @@ export default function Roles() {
             </Select>
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        open={detailModalOpen}
+        title={roleDetail ? `Role Detail: ${roleDetail.name}` : 'Role Detail'}
+        onCancel={() => setDetailModalOpen(false)}
+        footer={null}
+        width={500}
+        confirmLoading={loadingDetail}
+      >
+        {roleDetail ? (
+          <div>
+            <p><b>ID:</b> {roleDetail.id}</p>
+            <p><b>Name:</b> {roleDetail.name}</p>
+            <p><b>Permissions:</b></p>
+            <ul>
+              {roleDetail.permissions && roleDetail.permissions.length > 0 ? (
+                roleDetail.permissions.map((perm: any) => (
+                  <li key={perm.id}><b>{perm.code}</b>: {perm.name}</li>
+                ))
+              ) : (
+                <li>No permissions</li>
+              )}
+            </ul>
+          </div>
+        ) : (
+          <p>Loading...</p>
+        )}
       </Modal>
     </div>
   );

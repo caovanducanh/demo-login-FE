@@ -15,6 +15,7 @@ const LoginPage: React.FC = () => {
     } else if (login.isError && login.error instanceof Error) {
       message.error(login.error.message);
     }
+    // Không hiện alert/message khi login thành công
   }, [login.isSuccess, login.isError]);
 
   const onFinish = (values: any) => {

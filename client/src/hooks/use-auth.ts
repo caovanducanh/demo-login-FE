@@ -63,7 +63,7 @@ function useAuth() {
           username: payload?.sub || "",
           roles: payload?.roles || [],
         });
-        toast({ title: "Đăng nhập thành công" });
+     
         // Nếu là ADMIN thì chuyển sang dashboard
         if (payload?.roles?.includes("ADMIN")) {
           setLocation("/dashboard");

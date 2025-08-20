@@ -18,13 +18,13 @@ const Profile: React.FC = () => {
   } = useQuery(["login-history"], () => fetchLoginHistory(0, 20));
 
   const logoutAllMutation = useMutation(() => logoutAllSessions("User logout all devices"), {
-    onSuccess: () => {
+    onSettled: () => {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       setLocation("/login");
     },
     onError: (err: any) => {
-      message.error(err.message);
+      // Không hiện message khi logout all fail, chỉ chuyển trang
     },
   });
 

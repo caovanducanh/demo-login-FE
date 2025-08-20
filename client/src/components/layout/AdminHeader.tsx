@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Avatar, Dropdown, Menu, Typography } from "antd";
+import { Layout, Avatar, Dropdown, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useLocation } from "wouter";
 const logo = "/logo/ChatGPT Image Aug 20, 2025, 04_06_17 PM.png";
@@ -34,7 +34,7 @@ export const AdminHeader: React.FC<{ username?: string }> = ({ username }) => {
         <img src={logo} alt="Logo" style={{ height: 40, marginRight: 16 }} />
         <Typography.Title level={4} style={{ color: "#fff", margin: 0 }}>Demo Login</Typography.Title>
       </div>
-  <Dropdown menu={menu} placement="bottomRight">
+      <Dropdown menu={menu} placement="bottomRight">
         <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
           <Avatar icon={<UserOutlined />} style={{ marginRight: 8 }} />
           <span style={{ color: "#fff", fontWeight: 500 }}>{username || "Admin"}</span>

@@ -160,6 +160,10 @@ export const rolesApi = {
     const response = await apiRequest("DELETE", `${API_BASE}/admin/roles/${id}`, { reason: "Admin deletion" });
     return response.json();
   },
+  getDetail: async (id: number): Promise<ApiResponse<Role & { permissions: Permission[] }>> => {
+    const response = await apiRequest("GET", `${API_BASE}/admin/roles/${id}`);
+    return response.json();
+  },
 };
 
 export const permissionsApi = {
