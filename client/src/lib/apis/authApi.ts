@@ -10,7 +10,16 @@ export const loginWithGoogle = async () => {
 
 export async function login(credentials: LoginRequest): Promise<LoginResponse> {
   const response = await apiRequest("POST", `${API_BASE}/login`, credentials);
-  return response.json();
+  const res = await response.json();
+  // unwrap backend response: { statusCode, message, data: { token, refreshToken } }
+  if (res && res.data && res.data.token && res.data.refreshToken) {
+    return {
+      token: res.data.token,
+      refreshToken: res.data.refreshToken,
+    };
+  }
+  // fallback: return empty or throw error
+  throw new Error(res?.message || "Login failed");
 }
 
 

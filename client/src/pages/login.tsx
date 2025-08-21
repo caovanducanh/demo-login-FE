@@ -40,11 +40,15 @@ const LoginPage: React.FC = () => {
 
   React.useEffect(() => {
     if (login.isSuccess && login.data?.token) {
+      // Always store token and refreshToken
+      localStorage.setItem("token", login.data.token);
+      if (login.data.refreshToken) localStorage.setItem("refreshToken", login.data.refreshToken);
       try {
         const payload = jwtDecode(login.data.token) as {
           roles: string[];
           sub: string;
         };
+        console.log('JWT payload:', payload);
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -57,13 +61,14 @@ const LoginPage: React.FC = () => {
         } else {
           setLocation("/home");
         }
-      } catch {
+      } catch (e) {
+        console.error('JWT decode error:', e);
         setLocation("/dashboard");
       }
     } else if (login.isError && login.error instanceof Error) {
       message.error(login.error.message);
     }
-  }, [login.isSuccess, login.isError]);
+  }, [login.isSuccess, login.isError, login.data, setLocation]);
 
   const onFinish = (values: any) => {
     setLoading(true);
