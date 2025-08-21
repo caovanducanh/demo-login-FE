@@ -12,19 +12,18 @@ export default function Session() {
     },
     onError: (e: any) => message.error(e.message),
   });
-  const logoutAllMutation = useMutation((reason: string) => logoutAllSessions(reason), {
-    onSuccess: () => {
-      message.success("Đăng xuất tất cả thành công");
-      refetch();
-    },
-    onError: (e: any) => message.error(e.message),
-  });
+ const logoutAllMutation = useMutation(logoutAllSessions, {
+  onSuccess: () => {
+    message.success("Đăng xuất tất cả thành công");
+    refetch();
+  },
+  onError: (e: any) => message.error(e.message),
+});
+
 
   const handleLogoutAll = () => {
-    let reason = "";
-    reason = window.prompt("Lý do đăng xuất tất cả:", "") || "";
-    if (reason) logoutAllMutation.mutate(reason);
-  };
+  logoutAllMutation.mutate();
+};
 
   return (
     <Card style={{ maxWidth: 400, margin: "32px auto" }} className="session-card">

@@ -1,5 +1,5 @@
 import { apiRequest } from "../queryClient";
-import { BASE_BACKEND_URL } from "./base.ts";
+import { BASE_BACKEND_URL } from "./base";
 
 export async function logoutCurrentSession() {
   const res = await apiRequest("POST", `${BASE_BACKEND_URL}/api/session/logout`);
@@ -8,7 +8,7 @@ export async function logoutCurrentSession() {
   return data;
 }
 
-export async function logoutAllSessions(reason: string) {
+export async function logoutAllSessions() {
   const res = await apiRequest("POST", `${BASE_BACKEND_URL}/api/session/logout-all`, { reason });
   const data = await res.json();
   if (data.status !== 200 && data.statusCode !== 200) throw new Error(data.message || 'Lỗi đăng xuất tất cả');

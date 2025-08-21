@@ -4,11 +4,12 @@ import { fetchCurrentUser } from "../../lib/apis/userApi";
 import { logoutAllSessions } from "../../lib/apis/sessionApi";
 import { Card, Typography, Descriptions, Spin, message, Tabs, Table, Button, Modal } from "antd";
 import { fetchLoginHistory } from "../../lib/apis/loginHistoryApi";
+import type { UserInfo } from "../../types/user";
 import { useLocation } from "wouter";
 
 const Profile: React.FC = () => {
   const [, setLocation] = useLocation();
-  const { data, isLoading, isError, error } = useQuery(["current-user"], fetchCurrentUser);
+  const { data, isLoading, isError, error } = useQuery<UserInfo>(["current-user"], fetchCurrentUser);
   const {
     data: loginHistory,
     isLoading: isLoadingHistory,
@@ -16,7 +17,7 @@ const Profile: React.FC = () => {
     error: errorHistory,
   } = useQuery(["login-history"], () => fetchLoginHistory(0, 20));
 
-  const logoutAllMutation = useMutation(() => logoutAllSessions("User logout all devices"), {
+  const logoutAllMutation = useMutation(() => logoutAllSessions(), {
     onSettled: () => {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
@@ -73,16 +74,16 @@ const Profile: React.FC = () => {
                   labelStyle={{ width: "40%", wordWrap: "break-word" }}
                   contentStyle={{ wordWrap: "break-word" }}
                 >
-                  <Descriptions.Item label="Username">{data.username}</Descriptions.Item>
-                  <Descriptions.Item label="Full Name">{data.fullName}</Descriptions.Item>
-                  <Descriptions.Item label="Email">{data.email}</Descriptions.Item>
-                  <Descriptions.Item label="Phone">{data.phone}</Descriptions.Item>
-                  <Descriptions.Item label="Address">{data.address}</Descriptions.Item>
-                  <Descriptions.Item label="Date of Birth">{data.dateOfBirth}</Descriptions.Item>
-                  <Descriptions.Item label="Identity Card">{data.identityCard}</Descriptions.Item>
-                  <Descriptions.Item label="Gender">{data.gender}</Descriptions.Item>
-                  <Descriptions.Item label="Status">{data.status}</Descriptions.Item>
-                  <Descriptions.Item label="Created Date">{data.createdDate}</Descriptions.Item>
+                  <Descriptions.Item label="Username">{data.username || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Full Name">{data.fullName || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Email">{(data as any).email || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Phone">{(data as any).phone || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Address">{(data as any).address || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Date of Birth">{(data as any).dateOfBirth || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Identity Card">{(data as any).identityCard || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Gender">{(data as any).gender || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Status">{(data as any).status || ""}</Descriptions.Item>
+                  <Descriptions.Item label="Created Date">{(data as any).createdDate || ""}</Descriptions.Item>
                 </Descriptions>
               </>
             ),
@@ -103,7 +104,7 @@ const Profile: React.FC = () => {
                     dataSource={loginHistory?.content || []}
                     columns={historyColumns}
                     loading={isLoadingHistory}
-                    rowKey="id"
+                    rowKey={(record, idx) => (record && typeof record === 'object' && 'id' in record ? (record as any).id : idx)}
                     pagination={{
                       pageSize: loginHistory?.page?.size || 20,
                       total: loginHistory?.page?.totalElements || 0,

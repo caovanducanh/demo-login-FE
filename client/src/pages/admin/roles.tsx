@@ -43,7 +43,7 @@ export default function Roles() {
     },
     onError: (err: any) => message.error(err.message)
   });
-  const deleteMutation = useMutation((id: number) => roleApi.deleteRole(id, "Admin deletion"), {
+  const deleteMutation = useMutation((id: number) => roleApi.deleteRole(id), {
     onSuccess: () => {
       message.success("Role deleted");
       queryClient.invalidateQueries(["roles"]);

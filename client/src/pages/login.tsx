@@ -39,9 +39,9 @@ const LoginPage: React.FC = () => {
   }, [setLocation]);
 
   React.useEffect(() => {
-    if (login.isSuccess && login.data?.data?.token) {
+    if (login.isSuccess && login.data?.token) {
       try {
-        const payload = jwtDecode(login.data.data.token) as {
+        const payload = jwtDecode(login.data.token) as {
           roles: string[];
           sub: string;
         };
