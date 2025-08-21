@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { Layout, Avatar, Dropdown, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useLocation } from "wouter";
@@ -26,7 +26,21 @@ const AppHeader: React.FC = () => {
 
   const roles: string[] = user?.roles || [];
   const isAdmin = roles.includes("ADMIN");
-  const username = user?.sub || (isAdmin ? "Admin" : "");
+
+  const [fullName, setFullName] = useState<string>("");
+
+  useEffect(() => {
+    if (!token) {
+      setFullName("");
+      return;
+    }
+    fetch("http://localhost:8080/api/admin/users/me/fullname", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => setFullName(data?.data || ""))
+      .catch(() => setFullName(""));
+  }, [token]);
 
   const menu = {
     items: [
@@ -52,61 +66,179 @@ const AppHeader: React.FC = () => {
     setLocation(isAdmin ? "/dashboard" : "/home");
   };
 
-  // Sử dụng URL trực tiếp từ GitHub
-  const logoUrl = "https://raw.githubusercontent.com/caovanducanh/demo-login-FE/master/logo.png";
+  const logoUrl =
+    "https://raw.githubusercontent.com/caovanducanh/demo-login-FE/master/logo.png";
 
   return (
     <Header
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
         background: "#141414",
         padding: "0 24px",
-        height: 64,
+        minHeight: 64,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
       }}
     >
       <div
-        style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-        onClick={handleLogoClick}
+        className="header-inner"
+        style={{
+          width: "100%",
+          display: "flex",
+          flexWrap: "nowrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
       >
-        <img 
-          src={logoUrl} 
-          alt="Logo" 
-          style={{ height: 40, marginRight: 16 }} 
-          onError={(e) => {
-            console.error("Logo failed to load from GitHub");
-            e.currentTarget.style.display = 'none';
-          }}
-        />
-        <Typography.Title level={4} style={{ color: "#fff", margin: 0 }}>
-          Demo Login
-        </Typography.Title>
-      </div>
-      {user ? (
-        <Dropdown menu={menu} placement="bottomRight">
-          <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
-            <Avatar icon={<UserOutlined />} style={{ marginRight: 8 }} />
-            <span style={{ color: "#fff", fontWeight: 500 }}>{username}</span>
-          </div>
-        </Dropdown>
-      ) : (
-        <button
+        <div
+          className="header-logo-title"
           style={{
-            background: "transparent",
-            color: "#fff",
-            border: "none",
-            borderRadius: 0,
-            padding: "6px 18px",
-            fontWeight: 500,
+            display: "flex",
+            alignItems: "center",
             cursor: "pointer",
-            fontSize: 16,
+            minWidth: 0,
+            flexGrow: 1,
           }}
-          onClick={() => setLocation("/login")}
+          onClick={handleLogoClick}
         >
-          Đăng nhập
-        </button>
-      )}
+          <img
+            src={logoUrl}
+            alt="Logo"
+            className="header-logo"
+            style={{
+              height: 40,
+              marginRight: 16,
+              flexShrink: 0,
+              transition: "height 0.2s",
+            }}
+            onError={(e) => {
+              console.error("Logo failed to load from GitHub");
+              e.currentTarget.style.display = "none";
+            }}
+          />
+          <Typography.Title
+            level={4}
+            className="header-title"
+            style={{
+              color: "#fff",
+              margin: 0,
+              fontSize: 22,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: 200,
+              flexGrow: 1,
+              transition: "font-size 0.2s, max-width 0.2s",
+            }}
+          >
+            Demo Login
+          </Typography.Title>
+        </div>
+        <div
+          className="header-user"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: 0,
+            marginBottom: 0,
+            justifyContent: "flex-end",
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          {user ? (
+            <Dropdown menu={menu} placement="bottomRight">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  minWidth: 0,
+                }}
+              >
+                <Avatar
+                  icon={<UserOutlined />}
+                  className="header-avatar"
+                  style={{
+                    marginRight: 8,
+                    transition: "width 0.2s, height 0.2s",
+                    flexShrink: 0,
+                  }}
+                />
+                <span
+                  className="header-username"
+                  style={{
+                    color: "#fff",
+                    fontWeight: 500,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: 160,
+                  }}
+                >
+                  {fullName || user.sub}
+                </span>
+              </div>
+            </Dropdown>
+          ) : (
+            <button
+              className="header-login-btn"
+              style={{
+                background: "transparent",
+                color: "#fff",
+                border: "none",
+                borderRadius: 0,
+                padding: "6px 18px",
+                fontWeight: 500,
+                cursor: "pointer",
+                fontSize: 16,
+              }}
+              onClick={() => setLocation("/login")}
+            >
+              Đăng nhập
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Responsive style */}
+      <style>{`
+        @media (max-width: 600px) {
+          .ant-layout-header {
+            padding: 0 8px !important;
+            min-height: 56px !important;
+          }
+          .header-logo {
+            height: 28px !important;
+            margin-right: 8px !important;
+          }
+          .header-title {
+            font-size: 15px !important;
+            max-width: 140px !important;
+          }
+          .header-avatar {
+            width: 28px !important;
+            height: 28px !important;
+            margin-right: 6px !important;
+          }
+          .header-username {
+            font-size: 14px !important;
+            max-width: 120px !important;
+          }
+          .header-login-btn {
+            font-size: 14px !important;
+            padding: 4px 10px !important;
+          }
+        }
+        @media (max-width: 400px) {
+          .header-username {
+            display: none !important;
+          }
+          .header-title {
+            max-width: 160px !important;
+          }
+        }
+      `}</style>
     </Header>
   );
 };

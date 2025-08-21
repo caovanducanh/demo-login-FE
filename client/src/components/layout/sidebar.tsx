@@ -39,13 +39,40 @@ export function Sidebar() {
     },
   ];
   return (
-    <Sider width={220} style={{ minHeight: "100vh", background: "#fff" }}>
-      <Menu
-        mode="inline"
-        defaultSelectedKeys={[window.location.pathname]}
-        style={{ height: "100%", borderRight: 0 }}
-        items={items}
-      />
-    </Sider>
+    <>
+      <Sider width={220} style={{ minHeight: "100vh", background: "#fff" }} className="custom-sidebar">
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={[window.location.pathname]}
+          style={{ height: "100%", borderRight: 0 }}
+          items={items}
+        />
+      </Sider>
+      <style>{`
+        @media (max-width: 600px) {
+          .custom-sidebar {
+            width: 60px !important;
+            min-width: 60px !important;
+            max-width: 60px !important;
+          }
+          .custom-sidebar .ant-menu {
+            font-size: 14px !important;
+          }
+          .custom-sidebar .ant-menu-item {
+            padding-left: 12px !important;
+            padding-right: 8px !important;
+          }
+          .custom-sidebar .ant-menu-item .anticon {
+            font-size: 18px !important;
+          }
+          .custom-sidebar .ant-menu-item a {
+            font-size: 0 !important;
+          }
+          .custom-sidebar .ant-menu-item-selected {
+            background: #e6f7ff !important;
+          }
+        }
+      `}</style>
+    </>
   );
 }

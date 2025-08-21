@@ -124,19 +124,24 @@ export default function Roles() {
     <div>
       <Typography.Title level={2} style={{ marginBottom: 16 }}>Role Management</Typography.Title>
       <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>Add Role</Button>
-      <Table
-        columns={columns}
-        dataSource={roles || []}
-        rowKey="id"
-        loading={isLoading}
-        pagination={false}
-      />
+      <div style={{ overflowX: 'auto' }}>
+        <Table
+          columns={columns}
+          dataSource={roles || []}
+          rowKey="id"
+          loading={isLoading}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+        />
+      </div>
       <Modal
         open={modalOpen}
         title={editingRole ? "Edit Role" : "Add Role"}
         onOk={handleOk}
         onCancel={() => { setModalOpen(false); setEditingRole(null); }}
         confirmLoading={createMutation.isLoading || updateMutation.isLoading}
+        bodyStyle={{ padding: 12 }}
+        style={{ maxWidth: '95vw', minWidth: 0 }}
       >
         <Form form={form} layout="vertical">
           <Form.Item name="name" label="Role Name" rules={[{ required: true, message: "Role name is required" }]}> <Input /> </Form.Item>
@@ -156,6 +161,8 @@ export default function Roles() {
         footer={null}
         width={500}
         confirmLoading={loadingDetail}
+        bodyStyle={{ padding: 12 }}
+        style={{ maxWidth: '95vw', minWidth: 0 }}
       >
         {roleDetail ? (
           <div>
@@ -176,6 +183,25 @@ export default function Roles() {
           <p>Loading...</p>
         )}
       </Modal>
+      <style>{`
+        @media (max-width: 600px) {
+          .ant-table {
+            font-size: 13px;
+          }
+          .ant-btn {
+            font-size: 13px;
+            padding: 0 8px;
+            height: 28px;
+          }
+          h2, .ant-typography {
+            font-size: 18px !important;
+          }
+          .ant-modal {
+            width: 98vw !important;
+            min-width: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

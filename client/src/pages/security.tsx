@@ -87,13 +87,31 @@ export default function Security() {
   return (
     <div>
       <Typography.Title level={2} style={{ marginBottom: 16 }}>Security Management</Typography.Title>
-      <Table
-        columns={columns}
-        dataSource={data?.content || []}
-        rowKey="userId"
-        loading={isLoading}
-        pagination={false}
-      />
+      <div style={{ overflowX: 'auto' }}>
+        <Table
+          columns={columns}
+          dataSource={data?.content || []}
+          rowKey="userId"
+          loading={isLoading}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+        />
+      </div>
+      <style>{`
+        @media (max-width: 600px) {
+          .ant-table {
+            font-size: 13px;
+          }
+          .ant-btn {
+            font-size: 13px;
+            padding: 0 8px;
+            height: 28px;
+          }
+          h2, .ant-typography {
+            font-size: 18px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

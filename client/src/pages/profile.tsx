@@ -6,7 +6,6 @@ import { Card, Typography, Descriptions, Spin, message, Tabs, Table, Button, Mod
 import { fetchLoginHistory } from "../lib/apis/loginHistoryApi";
 import { useLocation } from "wouter";
 
-
 const Profile: React.FC = () => {
   const [, setLocation] = useLocation();
   const { data, isLoading, isError, error } = useQuery(["current-user"], fetchCurrentUser);
@@ -15,7 +14,6 @@ const Profile: React.FC = () => {
     isLoading: isLoadingHistory,
     isError: isErrorHistory,
     error: errorHistory,
-    refetch: refetchHistory
   } = useQuery(["login-history"], () => fetchLoginHistory(0, 20));
 
   const logoutAllMutation = useMutation(() => logoutAllSessions("User logout all devices"), {
@@ -24,20 +22,14 @@ const Profile: React.FC = () => {
       localStorage.removeItem("refreshToken");
       setLocation("/login");
     },
-    onError: (err: any) => {
-      // Không hiện message khi logout all fail, chỉ chuyển trang
-    },
   });
 
   React.useEffect(() => {
-    if (isError && error instanceof Error) {
-      message.error(error.message);
-    }
+    if (isError && error instanceof Error) message.error(error.message);
   }, [isError, error]);
+
   React.useEffect(() => {
-    if (isErrorHistory && errorHistory instanceof Error) {
-      message.error(errorHistory.message);
-    }
+    if (isErrorHistory && errorHistory instanceof Error) message.error(errorHistory.message);
   }, [isErrorHistory, errorHistory]);
 
   if (isLoading) return <Spin style={{ margin: 32 }} />;
@@ -53,81 +45,128 @@ const Profile: React.FC = () => {
   ];
 
   return (
-    <Card style={{ maxWidth: 700, margin: "32px auto" }}>
-      <Tabs defaultActiveKey="profile" items={[
-        {
-          key: "profile",
-          label: <span>Profile</span>,
-          children: (
-            <>
-              <Typography.Title level={3}>Profile</Typography.Title>
-              <Descriptions column={1} bordered size="middle">
-                <Descriptions.Item label="Username">{data.username}</Descriptions.Item>
-                <Descriptions.Item label="Full Name">{data.fullName}</Descriptions.Item>
-                <Descriptions.Item label="Email">{data.email}</Descriptions.Item>
-                <Descriptions.Item label="Phone">{data.phone}</Descriptions.Item>
-                <Descriptions.Item label="Address">{data.address}</Descriptions.Item>
-                <Descriptions.Item label="Date of Birth">{data.dateOfBirth}</Descriptions.Item>
-                <Descriptions.Item label="Identity Card">{data.identityCard}</Descriptions.Item>
-                <Descriptions.Item label="Gender">{data.gender}</Descriptions.Item>
-                <Descriptions.Item label="Status">{data.status}</Descriptions.Item>
-                <Descriptions.Item label="Created Date">{data.createdDate}</Descriptions.Item>
-              </Descriptions>
-            </>
-          ),
-        },
-        {
-          key: "login-history",
-          label: <span>Login History</span>,
-          children: (
-            <>
-              <Typography.Title level={4} style={{ marginBottom: 16 }}>Login History</Typography.Title>
-              <Table
-                dataSource={loginHistory?.content || []}
-                columns={historyColumns}
-                loading={isLoadingHistory}
-                rowKey="id"
-                pagination={{
-                  pageSize: loginHistory?.page?.size || 20,
-                  total: loginHistory?.page?.totalElements || 0,
-                  current: (loginHistory?.page?.number || 0) + 1,
-                  showSizeChanger: false,
-                }}
-                style={{ marginBottom: 24 }}
-              />
-              <Button
-                type="primary"
-                danger
-                style={{
-                  marginTop: 16,
-                  width: 260,
-                  fontWeight: 600,
-                  fontSize: 16,
-                  background: '#ff4d4f',
-                  borderColor: '#ff4d4f',
-                  color: '#fff',
-                  display: 'block',
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                }}
-                loading={logoutAllMutation.isLoading}
-                onClick={() => {
-                  Modal.confirm({
-                    title: "Logout all devices?",
-                    content: "You will be logged out from all devices and must log in again.",
-                    okText: "Logout all",
-                    okButtonProps: { danger: true },
-                    cancelText: "Cancel",
-                    onOk: () => logoutAllMutation.mutate(),
-                  });
-                }}
-              >
-                Logout all devices
-              </Button>
-            </>
-          ),
-        },
-      ]} />
+    <Card
+      style={{
+        maxWidth: 700,
+        margin: "32px auto",
+        padding: "16px",
+      }}
+    >
+      <Tabs
+        defaultActiveKey="profile"
+        items={[
+          {
+            key: "profile",
+            label: <span>Profile</span>,
+            children: (
+              <>
+                <Typography.Title
+                  level={3}
+                  style={{ fontSize: "1.5rem", textAlign: "center", marginBottom: 24 }}
+                >
+                  Profile
+                </Typography.Title>
+                <Descriptions
+                  column={1}
+                  bordered
+                  size="middle"
+                  labelStyle={{ width: "40%", wordWrap: "break-word" }}
+                  contentStyle={{ wordWrap: "break-word" }}
+                >
+                  <Descriptions.Item label="Username">{data.username}</Descriptions.Item>
+                  <Descriptions.Item label="Full Name">{data.fullName}</Descriptions.Item>
+                  <Descriptions.Item label="Email">{data.email}</Descriptions.Item>
+                  <Descriptions.Item label="Phone">{data.phone}</Descriptions.Item>
+                  <Descriptions.Item label="Address">{data.address}</Descriptions.Item>
+                  <Descriptions.Item label="Date of Birth">{data.dateOfBirth}</Descriptions.Item>
+                  <Descriptions.Item label="Identity Card">{data.identityCard}</Descriptions.Item>
+                  <Descriptions.Item label="Gender">{data.gender}</Descriptions.Item>
+                  <Descriptions.Item label="Status">{data.status}</Descriptions.Item>
+                  <Descriptions.Item label="Created Date">{data.createdDate}</Descriptions.Item>
+                </Descriptions>
+              </>
+            ),
+          },
+          {
+            key: "login-history",
+            label: <span>Login History</span>,
+            children: (
+              <>
+                <Typography.Title
+                  level={4}
+                  style={{ marginBottom: 16, fontSize: "1.2rem", textAlign: "center" }}
+                >
+                  Login History
+                </Typography.Title>
+                <div style={{ overflowX: "auto" }}>
+                  <Table
+                    dataSource={loginHistory?.content || []}
+                    columns={historyColumns}
+                    loading={isLoadingHistory}
+                    rowKey="id"
+                    pagination={{
+                      pageSize: loginHistory?.page?.size || 20,
+                      total: loginHistory?.page?.totalElements || 0,
+                      current: (loginHistory?.page?.number || 0) + 1,
+                      showSizeChanger: false,
+                    }}
+                    style={{ marginBottom: 24, minWidth: 600 }}
+                    size="small"
+                  />
+                </div>
+                <Button
+                  type="primary"
+                  danger
+                  style={{
+                    marginTop: 16,
+                    width: "100%",
+                    maxWidth: 300,
+                    fontWeight: 600,
+                    fontSize: 16,
+                    display: "block",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                  }}
+                  loading={logoutAllMutation.isLoading}
+                  onClick={() => {
+                    Modal.confirm({
+                      title: "Logout all devices?",
+                      content: "You will be logged out from all devices and must log in again.",
+                      okText: "Logout all",
+                      okButtonProps: { danger: true },
+                      cancelText: "Cancel",
+                      onOk: () => logoutAllMutation.mutate(),
+                    });
+                  }}
+                >
+                  Logout all devices
+                </Button>
+              </>
+            ),
+          },
+        ]}
+      />
+      <style>{`
+        @media (max-width: 600px) {
+          .ant-card {
+            margin: 16px !important;
+            padding: 12px !important;
+          }
+          .ant-descriptions-item-label {
+            font-size: 13px !important;
+          }
+          .ant-descriptions-item-content {
+            font-size: 13px !important;
+          }
+          .ant-table {
+            font-size: 12px !important;
+          }
+          .ant-btn {
+            font-size: 14px !important;
+            padding: 6px 12px !important;
+          }
+        }
+      `}</style>
     </Card>
   );
 };

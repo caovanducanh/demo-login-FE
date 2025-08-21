@@ -50,24 +50,48 @@ export default function Permissions() {
   return (
     <div>
       <Typography.Title level={2} style={{ marginBottom: 16 }}>Permission Management</Typography.Title>
-      <Table
-        columns={columns}
-        dataSource={data || []}
-        rowKey="id"
-        loading={isLoading}
-        pagination={false}
-      />
+      <div style={{ overflowX: 'auto' }}>
+        <Table
+          columns={columns}
+          dataSource={data || []}
+          rowKey="id"
+          loading={isLoading}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+        />
+      </div>
       <Modal
         open={!!editing}
         title="Edit Permission"
         onOk={handleSave}
         onCancel={() => setEditing(null)}
         confirmLoading={updateMutation.isLoading}
+        bodyStyle={{ padding: 12 }}
+        style={{ maxWidth: '95vw', minWidth: 0 }}
       >
         <Form form={form} layout="vertical">
           <Form.Item name="name" label="Permission Name" rules={[{ required: true, message: "Permission name is required" }]}> <Input /> </Form.Item>
         </Form>
       </Modal>
+      <style>{`
+        @media (max-width: 600px) {
+          .ant-table {
+            font-size: 13px;
+          }
+          .ant-btn {
+            font-size: 13px;
+            padding: 0 8px;
+            height: 28px;
+          }
+          h2, .ant-typography {
+            font-size: 18px !important;
+          }
+          .ant-modal {
+            width: 98vw !important;
+            min-width: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
