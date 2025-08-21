@@ -99,18 +99,22 @@ export default function Roles() {
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "ID", dataIndex: "id", key: "id", width: "10%", align: "center" as const },
+    { title: "Name", dataIndex: "name", key: "name", width: "45%", align: "center" as const },
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: any) => [
-        <Button key="detail" size="small" onClick={() => handleDetail(record)} style={{ marginRight: 8 }}>Detail</Button>,
-        <Button key="edit" size="small" onClick={() => handleEdit(record)} style={{ marginRight: 8 }}>Edit</Button>,
-        <Popconfirm key="delete" title="Delete this role?" onConfirm={() => handleDelete(record.id)}>
-          <Button size="small" danger>Delete</Button>
-        </Popconfirm>
-      ]
+      width: '45%',
+      align: "right" as const,
+      render: (_: any, record: any) => (
+        <div className="action-btn-group">
+          <Button key="detail" size="small" onClick={() => handleDetail(record)} style={{ marginRight: 8 }}>Detail</Button>
+          <Button key="edit" size="small" onClick={() => handleEdit(record)} style={{ marginRight: 8 }}>Edit</Button>
+          <Popconfirm key="delete" title="Delete this role?" onConfirm={() => handleDelete(record.id)}>
+            <Button size="small" danger>Delete</Button>
+          </Popconfirm>
+        </div>
+      )
     }
   ];
 
@@ -132,6 +136,7 @@ export default function Roles() {
           loading={isLoading}
           pagination={false}
           scroll={{ x: 'max-content' }}
+          style={{ tableLayout: 'fixed', minWidth: 400 }}
         />
       </div>
       <Modal
@@ -200,6 +205,21 @@ export default function Roles() {
             width: 98vw !important;
             min-width: 0 !important;
           }
+          .action-btn-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+          }
+          .ant-table-cell {
+            text-align: center !important;
+          }
+        }
+        .action-btn-group {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          gap: 8px;
         }
       `}</style>
     </div>

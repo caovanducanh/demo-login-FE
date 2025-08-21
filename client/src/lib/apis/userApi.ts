@@ -15,5 +15,5 @@ export async function fetchUsers(page = 0, size = 20): Promise<UserListResponse>
   const res = await apiRequest("GET", `${BASE_BACKEND_URL}/api/admin/users?page=${page}&size=${size}`);
   const data = await res.json();
   if (data.statusCode !== 200) throw new Error(data.message || 'Lỗi lấy danh sách user');
-  return data.data as UserListResponse;
+  return data as UserListResponse;
 }

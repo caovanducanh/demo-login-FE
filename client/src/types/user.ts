@@ -1,12 +1,26 @@
 // Định nghĩa type cho User API
+
 export interface UserInfo {
-  id: string;
+  userId: number;
   username: string;
   fullName: string;
-  roles: string[];
+  email?: string;
+  phone?: string;
+  address?: string;
+  dateOfBirth?: string;
+  status?: string;
+  role?: string;
+  identity_Card?: string;
 }
 
 export interface UserListResponse {
-  data: UserInfo[];
-  total: number;
+  data: {
+    content: UserInfo[];
+    page: {
+      size: number;
+      number: number;
+      totalElements: number;
+      totalPages: number;
+    };
+  };
 }

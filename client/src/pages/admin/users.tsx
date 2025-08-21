@@ -39,11 +39,19 @@ export default function Users() {
       key: "phone",
     },
     {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
-      render: (role: string) => (
-        <Tag color={role === "ADMIN" ? "volcano" : "blue"}>{role}</Tag>
+      title: "Roles",
+      dataIndex: "roles",
+      key: "roles",
+      render: (roles: string[] = []) => (
+        <>
+          {roles.length === 0 ? (
+            <Tag color="default">No Role</Tag>
+          ) : (
+            roles.map((role) => (
+              <Tag key={role} color={role === "ADMIN" ? "volcano" : "blue"}>{role}</Tag>
+            ))
+          )}
+        </>
       ),
     },
     {
@@ -85,13 +93,13 @@ export default function Users() {
       <div style={{ overflowX: "auto" }}>
         <Table
           columns={columns}
-          dataSource={data?.content || []}
+          dataSource={data?.data?.content || []}
           rowKey="userId"
           loading={isLoading}
           pagination={{
             current: page,
             pageSize: 20,
-            total: data?.page?.totalElements || 0,
+            total: data?.data?.page?.totalElements || 0,
             onChange: (p) => setPage(p),
           }}
           scroll={{ x: "max-content" }}
