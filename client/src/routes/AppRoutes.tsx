@@ -1,12 +1,12 @@
 import React from "react";
 import { Route, Switch } from "wouter";
 
-import Users from "../pages/users";
-import Roles from "../pages/roles";
-import Permissions from "../pages/permissions";
+import Users from "../pages/admin/users";
+import Roles from "../pages/admin/roles";
+import Permissions from "../pages/admin/permissions";
 import Security from "../pages/security";
-import Session from "../pages/session";
-import Profile from "../pages/profile";
+import Session from "../pages/common/session";
+import Profile from "../pages/common/profile";
 import HomePage from "../pages/home";
 
 

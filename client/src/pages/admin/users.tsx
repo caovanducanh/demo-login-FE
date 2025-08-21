@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, Button, Space, Tag, message, Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUsers } from "../lib/apis/userApi";
+import { fetchUsers } from "../../lib/apis/userApi";
 
 export default function Users() {
   const [page, setPage] = React.useState(1);

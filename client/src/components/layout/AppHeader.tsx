@@ -2,13 +2,14 @@ import React, { useMemo, useEffect, useState } from "react";
 import { Layout, Avatar, Dropdown, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useLocation } from "wouter";
-import { jwtDecode } from "jwt-decode";
+import { decode as jwtDecode } from "../../service/jwt";
 
 const { Header } = Layout;
 
 interface JwtPayload {
   sub: string;
   roles: string[];
+  fullName?: string;
 }
 
 const AppHeader: React.FC = () => {
@@ -18,7 +19,7 @@ const AppHeader: React.FC = () => {
   const user = useMemo(() => {
     if (!token) return null;
     try {
-      return jwtDecode<JwtPayload>(token);
+      return jwtDecode(token) as JwtPayload;
     } catch {
       return null;
     }
@@ -26,21 +27,6 @@ const AppHeader: React.FC = () => {
 
   const roles: string[] = user?.roles || [];
   const isAdmin = roles.includes("ADMIN");
-
-  const [fullName, setFullName] = useState<string>("");
-
-  useEffect(() => {
-    if (!token) {
-      setFullName("");
-      return;
-    }
-    fetch("http://localhost:8080/api/admin/users/me/fullname", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(res => res.json())
-      .then(data => setFullName(data?.data || ""))
-      .catch(() => setFullName(""));
-  }, [token]);
 
   const menu = {
     items: [
@@ -176,7 +162,7 @@ const AppHeader: React.FC = () => {
                     maxWidth: 160,
                   }}
                 >
-                  {fullName || user.sub}
+                  {user.fullName || user.sub}
                 </span>
               </div>
             </Dropdown>

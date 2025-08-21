@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Table, Typography, message, Input, Button, Form, Modal } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import * as permissionApi from "../lib/apis/permissionApi";
+import * as permissionApi from "../../lib/apis/permissionApi";
 
 
 export default function Permissions() {

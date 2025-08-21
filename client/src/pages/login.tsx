@@ -3,9 +3,7 @@ import { useAuth } from "../hooks/use-auth";
 import { Form, Input, Button, Typography, Card, message } from "antd";
 import { loginWithGoogle } from "../lib/apis/authApi";
 import { useLocation } from "wouter";
-import { jwtDecode } from "jwt-decode";
-
-const realDecode = jwtDecode;
+import { decode as jwtDecode } from "../service/jwt";
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -21,7 +19,7 @@ const LoginPage: React.FC = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
       try {
-        const payload = realDecode(token) as { roles: string[]; sub: string };
+        const payload = jwtDecode(token) as { roles: string[]; sub: string };
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -43,7 +41,7 @@ const LoginPage: React.FC = () => {
   React.useEffect(() => {
     if (login.isSuccess && login.data?.data?.token) {
       try {
-        const payload = realDecode(login.data.data.token) as {
+        const payload = jwtDecode(login.data.data.token) as {
           roles: string[];
           sub: string;
         };

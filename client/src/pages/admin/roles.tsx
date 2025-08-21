@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import { Table, Typography, message, Button, Modal, Form, Input, Select, Popconfirm } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import * as roleApi from "../lib/apis/roleApi";
-import * as permissionApi from "../lib/apis/permissionApi";
+import * as roleApi from "../../lib/apis/roleApi";
+import * as permissionApi from "../../lib/apis/permissionApi";
 
 
 export default function Roles() {
