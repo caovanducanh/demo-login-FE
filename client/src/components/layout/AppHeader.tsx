@@ -26,7 +26,7 @@ const AppHeader: React.FC = () => {
 
   const roles: string[] = user?.roles || [];
   const isAdmin = roles.includes("ADMIN");
-  const username = user?.sub || (isAdmin ? "Admin" : "Member");
+  const username = user?.sub || (isAdmin ? "Admin" : "");
 
   const menu = {
     items: [
@@ -76,7 +76,6 @@ const AppHeader: React.FC = () => {
           style={{ height: 40, marginRight: 16 }} 
           onError={(e) => {
             console.error("Logo failed to load from GitHub");
-            // Fallback đến text nếu logo không load được
             e.currentTarget.style.display = 'none';
           }}
         />
@@ -84,12 +83,30 @@ const AppHeader: React.FC = () => {
           Demo Login
         </Typography.Title>
       </div>
-      <Dropdown menu={menu} placement="bottomRight">
-        <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
-          <Avatar icon={<UserOutlined />} style={{ marginRight: 8 }} />
-          <span style={{ color: "#fff", fontWeight: 500 }}>{username}</span>
-        </div>
-      </Dropdown>
+      {user ? (
+        <Dropdown menu={menu} placement="bottomRight">
+          <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+            <Avatar icon={<UserOutlined />} style={{ marginRight: 8 }} />
+            <span style={{ color: "#fff", fontWeight: 500 }}>{username}</span>
+          </div>
+        </Dropdown>
+      ) : (
+        <button
+          style={{
+            background: "transparent",
+            color: "#fff",
+            border: "none",
+            borderRadius: 0,
+            padding: "6px 18px",
+            fontWeight: 500,
+            cursor: "pointer",
+            fontSize: 16,
+          }}
+          onClick={() => setLocation("/login")}
+        >
+          Đăng nhập
+        </button>
+      )}
     </Header>
   );
 };
