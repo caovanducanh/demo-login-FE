@@ -4,7 +4,6 @@ import { Route, Switch } from "wouter";
 import Users from "../pages/admin/users";
 import Roles from "../pages/admin/roles";
 import Permissions from "../pages/admin/permissions";
-import Security from "../pages/security";
 import Session from "../pages/common/session";
 import Profile from "../pages/common/profile";
 import HomePage from "../pages/home";
@@ -22,7 +21,6 @@ const AppRoutes = () => (
     <Route path="/users" component={Users} />
     <Route path="/roles" component={Roles} />
     <Route path="/permissions" component={Permissions} />
-    <Route path="/security" component={Security} />
     <Route path="/session" component={Session} />
     <Route path="/profile" component={Profile} />
     <Route> <h2>404 Not Found</h2> </Route>

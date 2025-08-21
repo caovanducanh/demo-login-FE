@@ -93,17 +93,17 @@ function useAuth() {
   const login = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      if (data?.data?.token) {
-        tokenStorage.setToken(data.data.token);
-        if (data.data.refreshToken) localStorage.setItem("refreshToken", data.data.refreshToken);
+      if (data?.token) {
+        tokenStorage.setToken(data.token);
+        if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
         setIsAuthenticated(true);
-        const payload = decodeJwt(data.data.token);
+        const payload = decodeJwt(data.token);
         setUser({
           username: payload?.sub || "",
           roles: payload?.roles || [],
           refreshExp: payload?.refreshExp,
         });
-        setupAutoRefresh(data.data.token, payload);
+        setupAutoRefresh(data.token, payload);
         // Nếu là ADMIN thì chuyển sang dashboard
         if (payload?.roles?.includes("ADMIN")) {
           setLocation("/dashboard");
