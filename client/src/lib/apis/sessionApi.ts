@@ -9,11 +9,14 @@ export async function logoutCurrentSession() {
 }
 
 export async function logoutAllSessions() {
-  const res = await apiRequest("POST", `${BASE_BACKEND_URL}/api/session/logout-all`, { reason });
+  const res = await apiRequest("POST", `${BASE_BACKEND_URL}/api/session/logout-all`);
   const data = await res.json();
-  if (data.status !== 200 && data.statusCode !== 200) throw new Error(data.message || 'Lỗi đăng xuất tất cả');
+  if (data.status !== 200 && data.statusCode !== 200) {
+    throw new Error(data.message || "Lỗi đăng xuất tất cả");
+  }
   return data;
 }
+
 
 export async function forceLogoutUser(userId: number, reason: string) {
   const res = await apiRequest("POST", `${BASE_BACKEND_URL}/api/session/force-logout/${userId}`, { reason });
