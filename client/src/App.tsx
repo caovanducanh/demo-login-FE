@@ -101,71 +101,41 @@ export default function App() {
   const roles: string[] = user?.roles || [];
   const isMember = roles.length === 1 && roles[0] === "MEMBER";
 
+  // Luôn kiểm tra HUMAN_VERIFY_TOKEN cho mọi route, nếu chưa xác thực thì chỉ render widget xác minh
+  if (!isHumanVerified) {
+    return (
+      <Layout style={{ minHeight: "100vh", background: "#fff" }}>
+        <AppHeader />
+        <main style={{ padding: 24, minHeight: 360 }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
+            <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
+          </div>
+          {verifying && (
+            <div style={{ textAlign: "center", marginBottom: 16 }}>Verifying...</div>
+          )}
+          {verifyError && (
+            <div style={{ color: "red", textAlign: "center", marginBottom: 16 }}>{verifyError}</div>
+          )}
+        </main>
+      </Layout>
+    );
+  }
+
+  // Đã xác thực human, render app như bình thường
   // Các flag location
   const isHome = location === "/home" || location === "/";
   const isProfile = location === "/profile";
   const isLogin = location === "/login";
   const isRegister = location === "/register";
 
-  // Nếu chưa login và không phải home, login, register, profile → redirect về home
   if (!token && !isHome && !isLogin && !isRegister && !isProfile) {
     return <Redirect to="/home" />;
   }
-
-  // Nếu đã login mà vào login/register → redirect theo role
   if (token && (isLogin || isRegister)) {
     return <Redirect to={isMember ? "/home" : "/dashboard"} />;
   }
-
-  // Trang login
-  if (isLogin) {
-    return (
-      <Layout style={{ minHeight: "100vh", background: "#fff" }}>
-        <AppHeader />
-        <main style={{ padding: 24, minHeight: 360 }}>
-          {/* Turnstile widget toàn cục */}
-          {!isHumanVerified && (
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-              <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
-            </div>
-          )}
-          {verifying && (
-            <div style={{ textAlign: "center", marginBottom: 16 }}>Verifying...</div>
-          )}
-          {verifyError && (
-            <div style={{ color: "red", textAlign: "center", marginBottom: 16 }}>{verifyError}</div>
-          )}
-          {isHumanVerified && <LoginPage />}
-        </main>
-      </Layout>
-    );
-  }
-
-  // Trang register
-  if (isRegister) {
-    return (
-      <Layout style={{ minHeight: "100vh", background: "#fff" }}>
-        <AppHeader />
-        <main style={{ padding: 24, minHeight: 360 }}>
-          {/* Turnstile widget toàn cục */}
-          {!isHumanVerified && (
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-              <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
-            </div>
-          )}
-          {verifying && (
-            <div style={{ textAlign: "center", marginBottom: 16 }}>Verifying...</div>
-          )}
-          {verifyError && (
-            <div style={{ color: "red", textAlign: "center", marginBottom: 16 }}>{verifyError}</div>
-          )}
-          {isHumanVerified && <RegisterPage />}
-        </main>
-      </Layout>
-    );
-  }
-
-  // Trang home hoặc profile
+  if (isLogin) return <LoginPage />;
+  if (isRegister) return <RegisterPage />;
   if (isHome || isProfile) {
     return (
       <Layout style={{ minHeight: "100vh", background: "#fff" }}>
@@ -176,8 +146,6 @@ export default function App() {
       </Layout>
     );
   }
-
-  // Member → layout đơn giản
   if (isMember) {
     return (
       <Layout style={{ minHeight: "100vh", background: "#fff" }}>
@@ -188,8 +156,6 @@ export default function App() {
       </Layout>
     );
   }
-
-  // Admin → layout đầy đủ
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <AppHeader />
