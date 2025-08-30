@@ -1,6 +1,4 @@
 import React, { useMemo, useEffect, useState } from "react";
-import TurnstileWidget from "./components/TurnstileWidget";
-// Cloudflare Turnstile sitekey
 import { useLocation, Redirect } from "wouter";
 import { Layout } from "antd";
 import { Sidebar } from "./components/layout/sidebar";
@@ -10,6 +8,9 @@ import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import { jwtDecode } from "jwt-decode";
 
+import HumanVerifyScreen from "./components/HumanVerifyScreen";
+import { decode as decodeJwt } from "./service/jwt";
+
 interface JwtPayload {
   sub: string;
   roles: string[];
@@ -18,17 +19,13 @@ interface JwtPayload {
 // Cloudflare Turnstile sitekey
 const TURNSTILE_SITEKEY = import.meta.env.VITE_TURNSTILE_SITEKEY;
 
-import { decode as decodeJwt } from "./service/jwt";
-
 export default function App() {
-  // State lưu token xác minh robot cho toàn app
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  // Trạng thái xác thực human
   const [isHumanVerified, setIsHumanVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
 
-  // Khi vào web, kiểm tra localStorage có HUMAN_VERIFY_TOKEN chưa và còn hạn không
+  // Khi vào web, kiểm tra token HUMAN_VERIFY_TOKEN trong localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem("HUMAN_VERIFY_TOKEN");
     if (savedToken) {
@@ -39,7 +36,6 @@ export default function App() {
         setTurnstileToken(null);
         return;
       } else {
-        // Token hết hạn
         localStorage.removeItem("HUMAN_VERIFY_TOKEN");
       }
     }
@@ -47,7 +43,7 @@ export default function App() {
     setTurnstileToken(null);
   }, []);
 
-  // Khi nhận được turnstileToken mới từ Cloudflare, gửi lên BE để lấy HUMAN_VERIFY_TOKEN và lưu vào localStorage nếu thành công
+  // Khi có token Turnstile, gọi BE để đổi lấy HUMAN_VERIFY_TOKEN
   useEffect(() => {
     if (turnstileToken) {
       setVerifying(true);
@@ -74,7 +70,8 @@ export default function App() {
       });
     }
   }, [turnstileToken]);
-  // Inject Turnstile script vào head khi app mount
+
+  // Inject script Turnstile
   useEffect(() => {
     const scriptId = "cf-turnstile-script";
     if (!document.getElementById(scriptId)) {
@@ -86,6 +83,7 @@ export default function App() {
       document.head.appendChild(script);
     }
   }, []);
+
   const [location] = useLocation();
   const token = localStorage.getItem("token");
 
@@ -101,27 +99,19 @@ export default function App() {
   const roles: string[] = user?.roles || [];
   const isMember = roles.length === 1 && roles[0] === "MEMBER";
 
-  // Luôn kiểm tra HUMAN_VERIFY_TOKEN cho mọi route, nếu chưa xác thực thì chỉ render widget xác minh
+  // Nếu chưa xác minh thì render HumanVerifyScreen
   if (!isHumanVerified) {
     return (
-      <Layout style={{ minHeight: "100vh", background: "#fff" }}>
-        <main style={{ padding: 24, minHeight: 360 }}>
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-            <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
-          </div>
-          {verifying && (
-            <div style={{ textAlign: "center", marginBottom: 16 }}>Verifying...</div>
-          )}
-          {verifyError && (
-            <div style={{ color: "red", textAlign: "center", marginBottom: 16 }}>{verifyError}</div>
-          )}
-        </main>
-      </Layout>
+      <HumanVerifyScreen
+        sitekey={TURNSTILE_SITEKEY}
+        verifying={verifying}
+        verifyError={verifyError}
+        onVerify={setTurnstileToken}
+      />
     );
   }
 
-  // Đã xác thực human, render app như bình thường
-  // Các flag location
+  // Các flags route
   const isHome = location === "/home" || location === "/";
   const isProfile = location === "/profile";
   const isLogin = location === "/login";
