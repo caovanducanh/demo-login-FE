@@ -105,7 +105,6 @@ export default function App() {
   if (!isHumanVerified) {
     return (
       <Layout style={{ minHeight: "100vh", background: "#fff" }}>
-        <AppHeader />
         <main style={{ padding: 24, minHeight: 360 }}>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
             <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
