@@ -1,4 +1,9 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
+import TurnstileWidget from "./components/TurnstileWidget";
+// Cloudflare Turnstile sitekey
+const TURNSTILE_SITEKEY = "0x4AAAAAABwUJEbeH28XFEpH";
+  // State lưu token xác minh robot cho toàn app
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 import { useLocation, Redirect } from "wouter";
 import { Layout } from "antd";
 import { Sidebar } from "./components/layout/sidebar";
@@ -23,8 +28,9 @@ export default function App() {
     if (!document.getElementById(scriptId)) {
       const script = document.createElement("script");
       script.id = scriptId;
-      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
       script.async = true;
+      script.defer = true;
       document.head.appendChild(script);
     }
   }, []);
@@ -65,7 +71,10 @@ export default function App() {
       <Layout style={{ minHeight: "100vh", background: "#fff" }}>
         <AppHeader />
         <main style={{ padding: 24, minHeight: 360 }}>
-          {/* Turnstile widget sẽ được render trong LoginPage */}
+          {/* Turnstile widget toàn cục */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
+            <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
+          </div>
           <LoginPage />
         </main>
       </Layout>
@@ -78,7 +87,10 @@ export default function App() {
       <Layout style={{ minHeight: "100vh", background: "#fff" }}>
         <AppHeader />
         <main style={{ padding: 24, minHeight: 360 }}>
-          {/* Turnstile widget sẽ được render trong RegisterPage nếu cần */}
+          {/* Turnstile widget toàn cục */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
+            <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
+          </div>
           <RegisterPage />
         </main>
       </Layout>

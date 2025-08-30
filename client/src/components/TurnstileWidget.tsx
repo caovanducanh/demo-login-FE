@@ -26,16 +26,7 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
   const widgetRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (!document.getElementById(TURNSTILE_SCRIPT_ID)) {
-      const script = document.createElement("script");
-      script.id = TURNSTILE_SCRIPT_ID;
-      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-  }, []);
+  // Không tự inject script nữa, App.tsx đã lo việc này
 
   useEffect(() => {
     function renderWidget() {
