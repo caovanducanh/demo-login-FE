@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Input, Button, Typography, Card, DatePicker, Select, message } from "antd";
 import { useLocation } from "wouter";
 import { register as registerApi, loginWithGoogle } from "../lib/apis/authApi";
+
 import dayjs from "dayjs";
 
 const RegisterPage: React.FC = () => {
