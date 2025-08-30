@@ -1,15 +1,18 @@
+
 import React, { useState } from "react";
 import { useAuth } from "../hooks/use-auth";
 import { Form, Input, Button, Typography, Card, message } from "antd";
 import { loginWithGoogle } from "../lib/apis/authApi";
 import { useLocation } from "wouter";
 import { decode as jwtDecode } from "../service/jwt";
+// ...existing code...
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [, setLocation] = useLocation();
+  // ...existing code...
 
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -40,7 +43,6 @@ const LoginPage: React.FC = () => {
 
   React.useEffect(() => {
     if (login.isSuccess && login.data?.token) {
-      // Always store token and refreshToken
       localStorage.setItem("token", login.data.token);
       if (login.data.refreshToken) localStorage.setItem("refreshToken", login.data.refreshToken);
       try {
@@ -48,7 +50,6 @@ const LoginPage: React.FC = () => {
           roles: string[];
           sub: string;
         };
-        console.log('JWT payload:', payload);
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -61,8 +62,7 @@ const LoginPage: React.FC = () => {
         } else {
           setLocation("/home");
         }
-      } catch (e) {
-        console.error('JWT decode error:', e);
+      } catch {
         setLocation("/dashboard");
       }
     } else if (login.isError && login.error instanceof Error) {
@@ -104,7 +104,6 @@ const LoginPage: React.FC = () => {
         >
           Đăng nhập
         </Typography.Title>
-
         <Form
           form={form}
           layout="vertical"
@@ -125,6 +124,7 @@ const LoginPage: React.FC = () => {
           >
             <Input.Password size="large" placeholder="••••••••" />
           </Form.Item>
+          {/* TurnstileWidget đã được remove, xác minh robot xử lý ở App.tsx */}
           <Form.Item>
             <Button
               type="primary"
@@ -137,7 +137,6 @@ const LoginPage: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
-
         <Button
           type="default"
           block
@@ -165,6 +164,10 @@ const LoginPage: React.FC = () => {
         >
           Đăng nhập với Google
         </Button>
+        <div style={{ textAlign: "center", marginTop: 16 }}>
+          Chưa có tài khoản?{' '}
+          <Button type="link" onClick={() => setLocation("/register")}>Đăng ký</Button>
+        </div>
       </Card>
     </div>
   );

@@ -7,6 +7,7 @@ import Permissions from "../pages/admin/permissions";
 import Session from "../pages/common/session";
 import Profile from "../pages/common/profile";
 import HomePage from "../pages/home";
+import RegisterPage from "../pages/register";
 
 
 function Dashboard() {
@@ -17,7 +18,8 @@ const AppRoutes = () => (
   <Switch>
     <Route path="/" component={HomePage} />
     <Route path="/home" component={HomePage} />
-    <Route path="/dashboard" component={Dashboard} />
+  <Route path="/dashboard" component={Dashboard} />
+  <Route path="/register" component={RegisterPage} />
     <Route path="/users" component={Users} />
     <Route path="/roles" component={Roles} />
     <Route path="/permissions" component={Permissions} />
