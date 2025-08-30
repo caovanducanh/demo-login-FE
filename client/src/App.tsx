@@ -35,23 +35,8 @@ export default function App() {
       const payload = decodeJwt(savedToken);
       const now = Math.floor(Date.now() / 1000);
       if (payload && payload.exp && payload.exp > now) {
-        // Token còn hạn, xác thực với backend
-        setVerifying(true);
-        setVerifyError(null);
-        import("./lib/apis/humanVerifyApi").then(({ verifyHuman }) => {
-          verifyHuman(savedToken)
-            .then(() => {
-              setIsHumanVerified(true);
-              setTurnstileToken(null);
-            })
-            .catch((err) => {
-              setVerifyError(err?.response?.data?.message || "Xác minh robot thất bại!");
-              setIsHumanVerified(false);
-              setTurnstileToken(null);
-              localStorage.removeItem("HUMAN_VERIFY_TOKEN");
-            })
-            .finally(() => setVerifying(false));
-        });
+        setIsHumanVerified(true);
+        setTurnstileToken(null);
         return;
       } else {
         // Token hết hạn
@@ -70,7 +55,6 @@ export default function App() {
       import("./lib/apis/humanVerifyApi").then(({ verifyHuman }) => {
         verifyHuman(turnstileToken)
           .then((res) => {
-            // BE trả về { verifyToken }
             if (res.verifyToken) {
               setIsHumanVerified(true);
               localStorage.setItem("HUMAN_VERIFY_TOKEN", res.verifyToken);
@@ -145,13 +129,13 @@ export default function App() {
               <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
             </div>
           )}
+          {verifying && (
+            <div style={{ textAlign: "center", marginBottom: 16 }}>Verifying...</div>
+          )}
           {verifyError && (
             <div style={{ color: "red", textAlign: "center", marginBottom: 16 }}>{verifyError}</div>
           )}
-          {verifying && (
-            <div style={{ textAlign: "center", marginBottom: 16 }}>Đang xác minh...</div>
-          )}
-          {isHumanVerified ? <LoginPage /> : <div style={{ textAlign: "center" }}>Vui lòng xác minh bạn không phải robot để tiếp tục đăng nhập.</div>}
+          {isHumanVerified && <LoginPage />}
         </main>
       </Layout>
     );
@@ -169,13 +153,13 @@ export default function App() {
               <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
             </div>
           )}
+          {verifying && (
+            <div style={{ textAlign: "center", marginBottom: 16 }}>Verifying...</div>
+          )}
           {verifyError && (
             <div style={{ color: "red", textAlign: "center", marginBottom: 16 }}>{verifyError}</div>
           )}
-          {verifying && (
-            <div style={{ textAlign: "center", marginBottom: 16 }}>Đang xác minh...</div>
-          )}
-          {isHumanVerified ? <RegisterPage /> : <div style={{ textAlign: "center" }}>Vui lòng xác minh bạn không phải robot để tiếp tục đăng ký.</div>}
+          {isHumanVerified && <RegisterPage />}
         </main>
       </Layout>
     );
