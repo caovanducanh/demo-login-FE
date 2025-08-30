@@ -134,8 +134,26 @@ export default function App() {
   if (token && (isLogin || isRegister)) {
     return <Redirect to={isMember ? "/home" : "/dashboard"} />;
   }
-  if (isLogin) return <LoginPage />;
-  if (isRegister) return <RegisterPage />;
+  if (isLogin) {
+    return (
+      <Layout style={{ minHeight: "100vh", background: "#fff" }}>
+        <AppHeader />
+        <main style={{ padding: 24, minHeight: 360 }}>
+          <LoginPage />
+        </main>
+      </Layout>
+    );
+  }
+  if (isRegister) {
+    return (
+      <Layout style={{ minHeight: "100vh", background: "#fff" }}>
+        <AppHeader />
+        <main style={{ padding: 24, minHeight: 360 }}>
+          <RegisterPage />
+        </main>
+      </Layout>
+    );
+  }
   if (isHome || isProfile) {
     return (
       <Layout style={{ minHeight: "100vh", background: "#fff" }}>
