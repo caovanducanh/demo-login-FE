@@ -25,8 +25,14 @@ export default function App() {
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
 
-  // Khi vào web, kiểm tra token HUMAN_VERIFY_TOKEN trong localStorage
+  // Nếu chạy ở localhost thì bỏ qua xác minh human
   useEffect(() => {
+    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    if (isLocalhost) {
+      setIsHumanVerified(true);
+      setTurnstileToken(null);
+      return;
+    }
     const savedToken = localStorage.getItem("HUMAN_VERIFY_TOKEN");
     if (savedToken) {
       const payload = decodeJwt(savedToken);
