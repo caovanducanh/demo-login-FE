@@ -107,12 +107,42 @@ export default function App() {
 
   // Nếu chưa xác minh thì render HumanVerifyScreen
   if (!isHumanVerified) {
+    // Reset verifyError mỗi lần render màn hình xác minh
+    useEffect(() => {
+      setVerifyError(null);
+    }, []);
+    // Callback nhận token và gọi BE ngay lập tức
+    const handleVerify = (token: string) => {
+      if (!token) return;
+      setVerifying(true);
+      setVerifyError(null);
+      import("./lib/apis/humanVerifyApi").then(({ verifyHuman }) => {
+        verifyHuman(token)
+          .then((res) => {
+            if (res.verifyToken) {
+              setIsHumanVerified(true);
+              localStorage.setItem("HUMAN_VERIFY_TOKEN", res.verifyToken);
+              setTurnstileToken(null);
+            } else {
+              setIsHumanVerified(false);
+              setVerifyError("Không nhận được token xác thực từ server!");
+              localStorage.removeItem("HUMAN_VERIFY_TOKEN");
+            }
+          })
+          .catch((err) => {
+            setVerifyError(err?.response?.data?.message || "Xác minh robot thất bại!");
+            setIsHumanVerified(false);
+            localStorage.removeItem("HUMAN_VERIFY_TOKEN");
+          })
+          .finally(() => setVerifying(false));
+      });
+    };
     return (
       <HumanVerifyScreen
         sitekey={TURNSTILE_SITEKEY}
         verifying={verifying}
         verifyError={verifyError}
-        onVerify={setTurnstileToken}
+        onVerify={handleVerify}
       />
     );
   }
