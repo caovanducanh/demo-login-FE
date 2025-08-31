@@ -26,8 +26,6 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
   const widgetRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
-  // Không tự inject script nữa, App.tsx đã lo việc này
-
   useEffect(() => {
     function renderWidget() {
       if (window.turnstile && widgetRef.current) {
@@ -45,6 +43,7 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
         });
       }
     }
+
     if (window.turnstile) {
       renderWidget();
     } else {
@@ -56,7 +55,7 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
       }, 200);
       return () => clearInterval(interval);
     }
-    // Cleanup
+
     return () => {
       if (widgetIdRef.current && window.turnstile) {
         window.turnstile.remove(widgetIdRef.current);
@@ -64,7 +63,17 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
     };
   }, [sitekey, theme, action, widgetName, onVerify]);
 
-  return <div ref={widgetRef} style={{ minHeight: 65 }} />;
+  return (
+    <div
+      ref={widgetRef}
+      style={{
+        minHeight: 65,
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    />
+  );
 };
 
 export default TurnstileWidget;
