@@ -24,6 +24,34 @@ export default function App() {
   const [isHumanVerified, setIsHumanVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
+  const lastTokenRef = React.useRef<string | null>(null);
+  // Đưa handleVerify ra ngoài, không khai báo trong if
+  const handleVerify = React.useCallback((token: string) => {
+    if (!token || token === lastTokenRef.current) return;
+    lastTokenRef.current = token;
+    setVerifying(true);
+    setVerifyError(null);
+    import("./lib/apis/humanVerifyApi").then(({ verifyHuman }) => {
+      verifyHuman(token)
+        .then((res) => {
+          if (res.verifyToken) {
+            setIsHumanVerified(true);
+            localStorage.setItem("HUMAN_VERIFY_TOKEN", res.verifyToken);
+            setTurnstileToken(null);
+          } else {
+            setIsHumanVerified(false);
+            setVerifyError("Không nhận được token xác thực từ server!");
+            localStorage.removeItem("HUMAN_VERIFY_TOKEN");
+          }
+        })
+        .catch((err) => {
+          setVerifyError(err?.response?.data?.message || "Xác minh robot thất bại!");
+          setIsHumanVerified(false);
+          localStorage.removeItem("HUMAN_VERIFY_TOKEN");
+        })
+        .finally(() => setVerifying(false));
+    });
+  }, []);
 
   // Nếu chạy ở localhost thì bỏ qua xác minh human
   useEffect(() => {
@@ -107,34 +135,6 @@ export default function App() {
 
   // Nếu chưa xác minh thì render HumanVerifyScreen
   if (!isHumanVerified) {
-    // Callback chỉ gọi khi token thực sự thay đổi
-    const lastTokenRef = React.useRef<string | null>(null);
-    const handleVerify = (token: string) => {
-      if (!token || token === lastTokenRef.current) return;
-      lastTokenRef.current = token;
-      setVerifying(true);
-      setVerifyError(null);
-      import("./lib/apis/humanVerifyApi").then(({ verifyHuman }) => {
-        verifyHuman(token)
-          .then((res) => {
-            if (res.verifyToken) {
-              setIsHumanVerified(true);
-              localStorage.setItem("HUMAN_VERIFY_TOKEN", res.verifyToken);
-              setTurnstileToken(null);
-            } else {
-              setIsHumanVerified(false);
-              setVerifyError("Không nhận được token xác thực từ server!");
-              localStorage.removeItem("HUMAN_VERIFY_TOKEN");
-            }
-          })
-          .catch((err) => {
-            setVerifyError(err?.response?.data?.message || "Xác minh robot thất bại!");
-            setIsHumanVerified(false);
-            localStorage.removeItem("HUMAN_VERIFY_TOKEN");
-          })
-          .finally(() => setVerifying(false));
-      });
-    };
     return (
       <HumanVerifyScreen
         sitekey={TURNSTILE_SITEKEY}
