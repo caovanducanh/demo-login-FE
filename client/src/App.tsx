@@ -107,13 +107,11 @@ export default function App() {
 
   // Nếu chưa xác minh thì render HumanVerifyScreen
   if (!isHumanVerified) {
-    // Reset verifyError mỗi lần render màn hình xác minh
-    useEffect(() => {
-      setVerifyError(null);
-    }, []);
-    // Callback nhận token và gọi BE ngay lập tức
+    // Callback chỉ gọi khi token thực sự thay đổi
+    const lastTokenRef = React.useRef<string | null>(null);
     const handleVerify = (token: string) => {
-      if (!token) return;
+      if (!token || token === lastTokenRef.current) return;
+      lastTokenRef.current = token;
       setVerifying(true);
       setVerifyError(null);
       import("./lib/apis/humanVerifyApi").then(({ verifyHuman }) => {
