@@ -8,6 +8,7 @@ import {
   TeamOutlined,
   SafetyOutlined,
   DashboardOutlined,
+  BankOutlined,
   IdcardOutlined
 } from "@ant-design/icons";
 
@@ -37,6 +38,11 @@ export function Sidebar() {
       icon: <SafetyOutlined />,
       label: <Link href="/permissions">Permissions</Link>,
     },
+    ...(isAdmin ? [{
+      key: "/branches",
+      icon: <BankOutlined />,
+      label: <Link href="/branches">Chi nhánh</Link>,
+    }] : []),
   ];
   return (
     <>

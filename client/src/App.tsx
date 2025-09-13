@@ -5,26 +5,30 @@ import { Sidebar } from "./components/layout/sidebar";
 import AppHeader from "./components/layout/AppHeader";
 import AppRoutes from "./routes/AppRoutes";
 import LoginPage from "./pages/login";
-import RegisterPage from "./pages/register";
-import { jwtDecode } from "jwt-decode";
+import { useAuth } from "./hooks/use-auth";
 
 import HumanVerifyScreen from "./components/HumanVerifyScreen";
 import { decode as decodeJwt } from "./service/jwt";
-
-interface JwtPayload {
-  sub: string;
-  roles: string[];
-}
 
 // Cloudflare Turnstile sitekey
 const TURNSTILE_SITEKEY = import.meta.env.VITE_TURNSTILE_SITEKEY;
 
 export default function App() {
+  const { user, isAuthenticated, handleOAuth2Callback } = useAuth();
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [isHumanVerified, setIsHumanVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const lastTokenRef = React.useRef<string | null>(null);
+
+  // Handle OAuth2 callback on app load
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("token") || params.has("error")) {
+      handleOAuth2Callback();
+    }
+  }, [handleOAuth2Callback]);
+
   // Đưa handleVerify ra ngoài, không khai báo trong if
   const handleVerify = React.useCallback((token: string) => {
     if (!token || token === lastTokenRef.current) return;
@@ -119,16 +123,6 @@ export default function App() {
   }, []);
 
   const [location] = useLocation();
-  const token = localStorage.getItem("token");
-
-  const user = useMemo(() => {
-    if (!token) return null;
-    try {
-      return jwtDecode<JwtPayload>(token);
-    } catch {
-      return null;
-    }
-  }, [token]);
 
   const roles: string[] = user?.roles || [];
   const isMember = roles.length === 1 && roles[0] === "MEMBER";
@@ -149,12 +143,11 @@ export default function App() {
   const isHome = location === "/home" || location === "/";
   const isProfile = location === "/profile";
   const isLogin = location === "/login";
-  const isRegister = location === "/register";
 
-  if (!token && !isHome && !isLogin && !isRegister && !isProfile) {
+  if (!isAuthenticated && !isHome && !isLogin && !isProfile) {
     return <Redirect to="/home" />;
   }
-  if (token && (isLogin || isRegister)) {
+  if (isAuthenticated && isLogin) {
     return <Redirect to={isMember ? "/home" : "/dashboard"} />;
   }
   if (isLogin) {
@@ -163,16 +156,6 @@ export default function App() {
         <AppHeader />
         <main style={{ padding: 24, minHeight: 360 }}>
           <LoginPage />
-        </main>
-      </Layout>
-    );
-  }
-  if (isRegister) {
-    return (
-      <Layout style={{ minHeight: "100vh", background: "#fff" }}>
-        <AppHeader />
-        <main style={{ padding: 24, minHeight: 360 }}>
-          <RegisterPage />
         </main>
       </Layout>
     );

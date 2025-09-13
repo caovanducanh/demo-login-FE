@@ -1,13 +1,5 @@
 // Định nghĩa type cho Auth API
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  refreshToken: string;
-}
+// Traditional login removed - Only OAuth2 Google authentication
 
 export interface RefreshTokenRequest {
   refreshToken: string;
@@ -16,4 +8,17 @@ export interface RefreshTokenRequest {
 export interface RefreshTokenResponse {
   accessToken: string;
   refreshToken: string;
+}
+
+// OAuth2 authentication response
+export interface OAuth2AuthResponse {
+  token: string;
+  refreshToken: string;
+  user: {
+    username: string;
+    email: string;
+    roles: string[];
+    branchCode?: string;
+    branchName?: string;
+  };
 }

@@ -3,6 +3,7 @@ import { Layout, Avatar, Dropdown, Typography } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useLocation } from "wouter";
 import { decode as jwtDecode } from "../../service/jwt";
+import { useAuth } from "../../hooks/use-auth";
 
 const { Header } = Layout;
 
@@ -14,6 +15,7 @@ interface JwtPayload {
 
 const AppHeader: React.FC = () => {
   const [, setLocation] = useLocation();
+  const { logout } = useAuth();
   const token = localStorage.getItem("token") || undefined;
 
   const user = useMemo(() => {
@@ -38,12 +40,7 @@ const AppHeader: React.FC = () => {
       {
         key: "logout",
         label: "Logout",
-        onClick: () => {
-          localStorage.removeItem("token");
-          localStorage.removeItem("refreshToken");
-          localStorage.removeItem("user");
-          setLocation("/login");
-        },
+        onClick: logout,
       },
     ],
   };

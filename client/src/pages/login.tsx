@@ -1,85 +1,31 @@
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "../hooks/use-auth";
-import { Form, Input, Button, Typography, Card, message } from "antd";
-import { loginWithGoogle } from "../lib/apis/authApi";
-
+import { Typography, Card } from "antd";
 import { useLocation } from "wouter";
-import { decode as jwtDecode } from "../service/jwt";
-// ...existing code...
+import BranchSelector from "../components/BranchSelector";
+
+const { Title } = Typography;
 
 const LoginPage: React.FC = () => {
-  const { login } = useAuth();
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+  const { handleOAuth2Callback, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
-  // ...existing code...
 
-  React.useEffect(() => {
+  // Handle OAuth2 callback when component mounts
+  useEffect(() => {
+    // Check if this is an OAuth2 callback
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    const refreshToken = params.get("refreshToken");
-    if (token && refreshToken) {
-      localStorage.setItem("token", token);
-      localStorage.setItem("refreshToken", refreshToken);
-      try {
-        const payload = jwtDecode(token) as { roles: string[]; sub: string };
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            username: payload.sub,
-            roles: payload.roles,
-          })
-        );
-        if (payload.roles && payload.roles.includes("ADMIN")) {
-          setLocation("/dashboard");
-        } else {
-          setLocation("/home");
-        }
-      } catch {
-        setLocation("/dashboard");
-      }
+    if (params.has("token") || params.has("error")) {
+      handleOAuth2Callback();
     }
-  }, [setLocation]);
+  }, [handleOAuth2Callback]);
 
-  React.useEffect(() => {
-    if (login.isSuccess && login.data?.token) {
-      localStorage.setItem("token", login.data.token);
-      if (login.data.refreshToken) localStorage.setItem("refreshToken", login.data.refreshToken);
-      try {
-        const payload = jwtDecode(login.data.token) as {
-          roles: string[];
-          sub: string;
-        };
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            username: payload.sub,
-            roles: payload.roles,
-          })
-        );
-        if (payload.roles && payload.roles.includes("ADMIN")) {
-          setLocation("/dashboard");
-        } else {
-          setLocation("/home");
-        }
-      } catch {
-        setLocation("/dashboard");
-      }
-    } else if (login.isError && login.error instanceof Error) {
-      message.error(login.error.message);
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation("/home");
     }
-  }, [login.isSuccess, login.isError, login.data, setLocation]);
-
-  const onFinish = (values: any) => {
-    setLoading(true);
-    login.mutate(
-      { username: values.username, password: values.password },
-      {
-        onSettled: () => setLoading(false),
-      }
-    );
-  };
+  }, [isAuthenticated, setLocation]);
 
   return (
     <div
@@ -94,81 +40,23 @@ const LoginPage: React.FC = () => {
     >
       <Card
         style={{
-          width: 360,
+          width: "100%",
+          maxWidth: 600,
           borderRadius: 12,
           boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
         }}
+        bodyStyle={{ padding: "2rem" }}
       >
-        <Typography.Title
-          level={3}
-          style={{ textAlign: "center", marginBottom: 32 }}
-        >
-          Đăng nhập
-        </Typography.Title>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: "Vui lòng nhập username!" }]}
-          >
-            <Input size="large" autoFocus placeholder="Nhập username..." />
-          </Form.Item>
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: "Vui lòng nhập password!" }]}
-          >
-            <Input.Password size="large" placeholder="••••••••" />
-          </Form.Item>
-          {/* TurnstileWidget đã được remove, xác minh robot xử lý ở App.tsx */}
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              size="large"
-              loading={loading}
-            >
-              Đăng nhập
-            </Button>
-          </Form.Item>
-        </Form>
-        <Button
-          type="default"
-          block
-          size="large"
-          style={{
-            marginTop: 8,
-            background: "#fff",
-            border: "1px solid #d9d9d9",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          icon={
-            <img
-              src="https://developers.google.com/identity/images/g-logo.png"
-              alt="Google"
-              style={{
-                width: 18,
-                marginRight: 8,
-                verticalAlign: "middle",
-              }}
-            />
-          }
-          onClick={loginWithGoogle}
-        >
-          Đăng nhập với Google
-        </Button>
-        <div style={{ textAlign: "center", marginTop: 16 }}>
-          Chưa có tài khoản?{' '}
-          <Button type="link" onClick={() => setLocation("/register")}>Đăng ký</Button>
+        <div style={{ marginBottom: "2rem", textAlign: "center" }}>
+          <Title level={2} style={{ marginBottom: 8 }}>
+            Đăng nhập hệ thống
+          </Title>
+          <Typography.Text type="secondary">
+            Chọn chi nhánh và đăng nhập bằng tài khoản Google
+          </Typography.Text>
         </div>
+
+        <BranchSelector />
       </Card>
     </div>
   );
